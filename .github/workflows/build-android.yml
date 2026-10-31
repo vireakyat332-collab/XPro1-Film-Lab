@@ -17,19 +17,27 @@ jobs:
       - name: Extract Android project
         run: unzip -o XPro1_Film_Lab_Android_Project_with_Cloud_Build.zip -d .
 
-      - uses: actions/setup-java@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - uses: android-actions/setup-android@v3
+      - name: Install Android SDK packages
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
-      - uses: gradle/actions/setup-gradle@v4
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
 
       - name: Build APK
         run: gradle --no-daemon -p XPro1FilmLabAndroid assembleDebug
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
           name: XPro1-Film-Lab-debug-apk
           path: XPro1FilmLabAndroid/app/build/outputs/apk/debug/app-debug.apk
